@@ -141,20 +141,27 @@ proc create_root_design { parentCell } {
   } else {
      set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
   }
+
   if { [string equal [get_property "board_part" [current_project]] ""] == 0 } {
      apply_bd_automation -rule "xilinx.com:bd_rule:processing_system7" -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" } $processing_system7_0
-  } else {
-     set import_board_preset [file join [file dirname [info script]] "pynqz1_zynq_preset.tcl"]
-     if { [file exists $import_board_preset] == 0 } {
-        puts "ERROR: Can not Read board preset file = $import_board_preset."
-        return 1
-     } else {
-        source $import_board_preset
-        set_property -dict [ apply_preset $processing_system7_0 ] $processing_system7_0
-     }
+     set preset_by_board_part 1
+  }
+  set import_board_preset [file join [file dirname [info script]] "zybo_z7_preset.tcl"]
+  if { [file exists $import_board_preset] == 1 } {
+     source $import_board_preset
+     set_property -dict [ apply_preset $processing_system7_0 ] $processing_system7_0
+     set preset_by_import_file 1
+     puts "INFO: Import Board Preset File $import_board_preset."
+  }
+  if { $preset_by_board_part == 0 } {
      set DDR      [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
      set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
   }
+  if { $preset_by_board_part == 0 || $preset_by_import_file == 0 } {
+     puts "Error: Can not Preset for ZYBO Z7"
+     return 1
+  }
+      
   set_property -dict [ list CONFIG.PCW_IRQ_F2P_INTR {1} CONFIG.PCW_USE_FABRIC_INTERRUPT {1} CONFIG.PCW_USE_S_AXI_ACP {1} CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100.0} ] $processing_system7_0
   connect_bd_intf_net -intf_net processing_system7_0_DDR      [get_bd_intf_ports DDR]      [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
