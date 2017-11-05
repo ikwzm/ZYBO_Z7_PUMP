@@ -162,7 +162,7 @@ proc create_root_design { parentCell } {
      return 1
   }
       
-  set_property -dict [ list CONFIG.PCW_IRQ_F2P_INTR {1} CONFIG.PCW_USE_FABRIC_INTERRUPT {1} CONFIG.PCW_USE_S_AXI_ACP {1} CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100.0} ] $processing_system7_0
+  set_property -dict [ list CONFIG.PCW_IRQ_F2P_INTR {1} CONFIG.PCW_USE_FABRIC_INTERRUPT {1} CONFIG.PCW_USE_S_AXI_ACP {1} CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {125.0} ] $processing_system7_0
   connect_bd_intf_net -intf_net processing_system7_0_DDR      [get_bd_intf_ports DDR]      [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   
@@ -172,6 +172,7 @@ proc create_root_design { parentCell } {
 
   # Create instance: LED4_AXI_0, and set properties
   set LED4_AXI_0 [ create_bd_cell -type ip -vlnv ikwzm:pipework:LED4_AXI:1.0 LED4_AXI_0 ]
+  set_property -dict [ list CONFIG.DEFAULT_SEQ_0 {1} CONFIG.DEFAULT_SEQ_1 {2} CONFIG.DEFAULT_SEQ_2 {4} CONFIG.DEFAULT_SEQ_3 {8} CONFIG.DEFAULT_SEQ_4 {4} CONFIG.DEFAULT_SEQ_5 {2} CONFIG.DEFAULT_TIMER {10000000} CONFIG.AUTO_START {1} ] [get_bd_cells LED4_AXI_0 ]
 
   # Create instance: axi_interconnect_acp, and set properties
   set axi_interconnect_acp [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_acp ]
@@ -184,8 +185,8 @@ proc create_root_design { parentCell } {
   set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
 
   # Create instance: pump_axi3_to_axi3_0, and set properties
-  set pump_axi3_to_axi3_0 [ create_bd_cell -type ip -vlnv ikwzm:pipework:pump_axi3_to_axi3_v1_0:1.0 pump_axi3_to_axi3_0 ]
-  set_property -dict [ list CONFIG.BUF_DEPTH {8} CONFIG.C_ADDR_WIDTH {12} CONFIG.C_ID_WIDTH {12} CONFIG.I_AUSER_WIDTH {5} CONFIG.I_DATA_WIDTH {64} CONFIG.I_ID_WIDTH {1} CONFIG.I_MAX_XFER_SIZE {7} CONFIG.M_AUSER_WIDTH {5} CONFIG.M_AXI_ID {0} CONFIG.M_DATA_WIDTH {64} CONFIG.M_ID_WIDTH {1} CONFIG.O_AUSER_WIDTH {5} CONFIG.O_AXI_ID {1} CONFIG.O_DATA_WIDTH {64} CONFIG.O_ID_WIDTH {1} CONFIG.O_MAX_XFER_SIZE {7}  ] $pump_axi3_to_axi3_0
+  set pump_axi3_to_axi3_0 [ create_bd_cell -type ip -vlnv ikwzm:pipework:pump_axi3_to_axi3_v1_1:1.1 pump_axi3_to_axi3_0 ]
+  set_property -dict [ list CONFIG.BUF_DEPTH {8} CONFIG.C_ADDR_WIDTH {12} CONFIG.C_ID_WIDTH {12} CONFIG.I_AUSER_WIDTH {5} CONFIG.I_DATA_WIDTH {64} CONFIG.I_ID_WIDTH {1} CONFIG.I_MAX_XFER_SIZE {7} CONFIG.M_AUSER_WIDTH {5} CONFIG.M_AXI_ID {0} CONFIG.M_DATA_WIDTH {64} CONFIG.M_ID_WIDTH {1} CONFIG.O_AUSER_WIDTH {5} CONFIG.O_AXI_ID {1} CONFIG.O_DATA_WIDTH {64} CONFIG.O_ID_WIDTH {1} CONFIG.O_MAX_XFER_SIZE {7}  CONFIG.I_QUEUE_SIZE {4} CONFIG.O_QUEUE_SIZE {4} ] $pump_axi3_to_axi3_0
 
   # Create interface connections
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins LED4_AXI_0/CSR] [get_bd_intf_pins axi_interconnect_csr/M00_AXI]
